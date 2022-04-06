@@ -104,13 +104,23 @@ def main():
         rocketPos[0] += rocketSpeed[0]
         rocketPos[1] += rocketSpeed[1]
 
-        #  Horizontal boundary for rocket ship
-        if rocketPos[0] <= 5 or rocketPos[0] >= 865:
+        #  Horizontal boundary's for rocket ship
+        if rocketPos[0] <= 5:
             rocketSpeed[0] = 0
+            rocketPos[0] += abs(rocketPos[0] - 5)  # Makes it impossible to cross 5 because the difference is added back
 
-        #  Vertical boundary for rocket ship
-        if rocketPos[1] <= 0 or rocketPos[1] >= 695:
+        if rocketPos[0] >= 865:
+            rocketSpeed[0] = 0
+            rocketPos[0] -= rocketPos[0] - 865  # Makes it impossible to cross 865 because difference is subtracted back
+
+        #  Vertical boundary's for rocket ship
+        if rocketPos[1] <= 0:
             rocketSpeed[1] = 0
+            rocketPos[1] -= rocketPos[1]  # If rocketPos < 0 then; (-) * (-) = +, impossible to pass 0
+
+        if rocketPos[1] >= 695:
+            rocketSpeed[1] = 0
+            rocketPos[1] -= rocketPos[1] - 695  # Difference is subtracted back making it impossible to cross 695
 
         # -----------------------------Drawing Everything--------------------------------#
 
