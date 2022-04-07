@@ -17,7 +17,13 @@
 from random import randint
 
 import pygame
+import math
 
+def distFromPoints(point1, point2):
+
+    distance = math.sqrt(((point2[0] - point1[0]) ** 2) + ((point2[1] - point1[1]) ** 2))
+
+    return distance
 
 def main():
     # -----------------------------Setup-------------------------------------------------#
@@ -31,9 +37,9 @@ def main():
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize - 100))
 
     # -----------------------------Program Variable Initialization-----------------------#
-    rocketBaseColor = (171, 186, 185)  # A color is a mix of (Red, Green, Blue)
+    rocketBaseColor = (171, 186, 185)  # rocket color
     rocketWingColor = (156, 5, 5)
-    rocketPos = [435, 250]
+    rocketPos = [435, 250]  # rocket position
     rocketSpeed = [0, 0]
     moveLeft = False
     moveRight = False
@@ -44,6 +50,8 @@ def main():
     asteroidSize = [50]
     astMovementX = 0
     astMovementY = 0
+
+    rocketAsteroidCollision = False
 
     # -----------------------------Main Game Loop----------------------------------------#
     while True:
@@ -128,7 +136,7 @@ def main():
             rocketSpeed[1] = 0
             rocketPos[1] -= rocketPos[1] - 695  # Difference is subtracted back making it impossible to cross 695
 
-        #  Getting asteroid to bounce off walls
+        #  Getting asteroid to bounce off walls/boundaries
         if asteroidPos[0] <= 25:
             astMovementX = randint(0, 5)
             astMovementY = randint(-5, 5)
@@ -144,6 +152,30 @@ def main():
 
         asteroidPos[0] += astMovementX
         asteroidPos[1] += astMovementY
+
+        #  Rocket key points for collision detection
+        rocketTopRight = (rocketPos[0] + 30, rocketPos[1])
+        rocketBtmLeft = (rocketPos[0] - 8, rocketPos[1] + 105)
+        rocketBtmRight = (rocketPos[0] + 38, rocketPos[1] + 105)
+        leftWing = (rocketPos[0] - 12, rocketPos[1] + 60)
+        rightWing = (rocketPos[0] + 42, rocketPos[1] + 60)
+
+        #  asteroid to rocket collision detection
+        if distFromPoints(asteroidPos, rocketPos) < asteroidSize[0] or \
+                distFromPoints(asteroidPos, rocketTopRight) < asteroidSize[0] or \
+                distFromPoints(asteroidPos, rocketBtmLeft) < asteroidSize[0] or \
+                distFromPoints(asteroidPos, rocketBtmRight) < asteroidSize[0] or \
+                distFromPoints(asteroidPos, leftWing) < asteroidSize[0] or \
+                distFromPoints(asteroidPos, rightWing) < asteroidSize[0]:
+            rocketAsteroidCollision = not rocketAsteroidCollision
+
+        if rocketAsteroidCollision:
+            rocketBaseColor = (255, 0, 0)
+            astMovementX = randint(-5, 5)
+            astMovementY = randint(-5, 5)
+            rocketSpeed[0] -= astMovementX
+            rocketSpeed[1] -= astMovementY
+            rocketAsteroidCollision = False
 
         # -----------------------------Drawing Everything--------------------------------#
 
@@ -162,7 +194,7 @@ def main():
         pygame.draw.polygon(mainSurface, rocketWingColor, [(rocketPos[0] + 28, rocketPos[1] + 20), (rocketPos[0] + 28,
                                                                                                     rocketPos[1] + 69),
                                                            (rocketPos[0] + 42, rocketPos[1] + 60)])  # Right wing
-        #  Space rocks (meteors, asteroids, commets)
+        #  Space rocks (meteors, asteroids, comet's)
         pygame.draw.circle(mainSurface, asteroidColor, (asteroidPos[0], asteroidPos[1]), asteroidSize[0])
 
         # Surface display
