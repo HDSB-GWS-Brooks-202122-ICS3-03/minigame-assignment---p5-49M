@@ -19,11 +19,12 @@ from random import randint
 import pygame
 import math
 
-def distFromPoints(point1, point2):
 
+def distFromPoints(point1, point2):
     distance = math.sqrt(((point2[0] - point1[0]) ** 2) + ((point2[1] - point1[1]) ** 2))
 
     return distance
+
 
 def main():
     # -----------------------------Setup-------------------------------------------------#
@@ -50,6 +51,7 @@ def main():
     asteroidSize = [50]
     astMovementX = 0
     astMovementY = 0
+    lives = 3
 
     rocketAsteroidCollision = False
 
@@ -160,7 +162,7 @@ def main():
         leftWing = (rocketPos[0] - 12, rocketPos[1] + 60)
         rightWing = (rocketPos[0] + 42, rocketPos[1] + 60)
 
-        #  asteroid to rocket collision detection
+        #  asteroid to rocket collision detection with key points
         if distFromPoints(asteroidPos, rocketPos) < asteroidSize[0] or \
                 distFromPoints(asteroidPos, rocketTopRight) < asteroidSize[0] or \
                 distFromPoints(asteroidPos, rocketBtmLeft) < asteroidSize[0] or \
@@ -170,11 +172,12 @@ def main():
             rocketAsteroidCollision = not rocketAsteroidCollision
 
         if rocketAsteroidCollision:
-            rocketBaseColor = (255, 0, 0)
+            #  rocketBaseColor = (255, 0, 0)
+            asteroidPos[0] = randint(0, 900)
+            asteroidPos[1] = randint(0, 800)
             astMovementX = randint(-5, 5)
             astMovementY = randint(-5, 5)
-            rocketSpeed[0] -= astMovementX
-            rocketSpeed[1] -= astMovementY
+            lives -= 1
             rocketAsteroidCollision = False
 
         # -----------------------------Drawing Everything--------------------------------#
