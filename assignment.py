@@ -14,6 +14,7 @@
 #   ...
 #   ...
 # ---------------------------------------------------------------------------------------#
+from random import randint
 
 import pygame
 
@@ -38,6 +39,11 @@ def main():
     moveRight = False
     moveUp = False
     moveDown = False
+    asteroidColor = (153, 153, 153)
+    asteroidPos = [900, 0]
+    asteroidSize = [50]
+    astMovementX = 0
+    astMovementY = 0
 
     # -----------------------------Main Game Loop----------------------------------------#
     while True:
@@ -122,6 +128,23 @@ def main():
             rocketSpeed[1] = 0
             rocketPos[1] -= rocketPos[1] - 695  # Difference is subtracted back making it impossible to cross 695
 
+        #  Getting asteroid to bounce off walls
+        if asteroidPos[0] <= 25:
+            astMovementX = randint(0, 5)
+            astMovementY = randint(-5, 5)
+        elif asteroidPos[0] >= 875:
+            astMovementX = randint(-5, 0)
+            astMovementY = randint(-5, 5)
+        elif asteroidPos[1] <= 25:
+            astMovementX = randint(-5, 5)
+            astMovementY = randint(0, 5)
+        elif asteroidPos[1] >= 775:
+            astMovementX = randint(-5, 5)
+            astMovementY = randint(-5, 0)
+
+        asteroidPos[0] += astMovementX
+        asteroidPos[1] += astMovementY
+
         # -----------------------------Drawing Everything--------------------------------#
 
         mainSurface.fill((39, 1, 59))
@@ -139,6 +162,8 @@ def main():
         pygame.draw.polygon(mainSurface, rocketWingColor, [(rocketPos[0] + 28, rocketPos[1] + 20), (rocketPos[0] + 28,
                                                                                                     rocketPos[1] + 69),
                                                            (rocketPos[0] + 42, rocketPos[1] + 60)])  # Right wing
+        #  Space rocks (meteors, asteroids, commets)
+        pygame.draw.circle(mainSurface, asteroidColor, (asteroidPos[0], asteroidPos[1]), asteroidSize[0])
 
         # Surface display
         pygame.display.flip()
