@@ -30,6 +30,7 @@ def main():
     # -----------------------------Setup-------------------------------------------------#
     """ Set up the game and run the main game loop """
     pygame.init()  # Prepare the pygame module for use
+    pygame.font.init()  # font display
     surfaceSize = 900  # Desired physical surface size, in pixels.
 
     clock = pygame.time.Clock()  # Force frame rate to be slower
@@ -42,6 +43,7 @@ def main():
     rocketWingColor = (156, 5, 5)
     rocketPos = [435, 250]  # rocket position
     rocketSpeed = [0, 0]
+    #  movement
     moveLeft = False
     moveRight = False
     moveUp = False
@@ -52,8 +54,8 @@ def main():
     astMovementX = 0
     astMovementY = 0
     lives = 3
-
     rocketAsteroidCollision = False
+    livesFont = pygame.font.SysFont('Comic Sans MS', 40)
 
     # -----------------------------Main Game Loop----------------------------------------#
     while True:
@@ -183,6 +185,10 @@ def main():
         # -----------------------------Drawing Everything--------------------------------#
 
         mainSurface.fill((39, 1, 59))
+        #  Lives counter
+        lifeCount = str(lives)
+        textSurface = livesFont.render(f"lives: {lifeCount}", False, (255, 0, 0))
+        mainSurface.blit(textSurface, (0, 0))
 
         #  Rocket design (All parts are connected throughout movement)
         pygame.draw.ellipse(mainSurface, rocketBaseColor, (rocketPos[0], rocketPos[1], 30, 90))  # rockets main body
