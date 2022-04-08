@@ -9,9 +9,11 @@
 # I think this project deserves a level XXXXXX because ...
 #
 # Features Added:
-#   Movement with boolean functions to make transitions from keys smoother. When two keys are pressed by accident at
+#   1. Movement with boolean functions to make transitions from keys smoother. When two keys are pressed by accident at
 #   the same time, movement does not stop and goes in the most recently clicked key direction.
-#   ...
+#   2. Multiple asteroids made using a list for convenience and saving space/code. The collision detection has been made
+#   to check if an asteroid has been hit and if so it finds which one it is and puts it through
+#   rocketAsteroidCollision variable steps.
 #   ...
 # ---------------------------------------------------------------------------------------#
 from random import randint
@@ -48,13 +50,21 @@ def main():
     moveRight = False
     moveUp = False
     moveDown = False
+    #  asteroids position is made through a list and each is unique with a random spawn and random movement
     asteroidColor = (153, 153, 153)
-    asteroidPos = [900, 0]
-    asteroidSize = [50]
-    astMovementX = 0
-    astMovementY = 0
+    asteroidPos = []
+    asteroidSize = [30]
+    astMovementX = []
+    astMovementY = []
+    rocketAsteroidCollision = []
+    numAsteroids = 3
+    for count in range(numAsteroids):
+        asteroidPos.append([900, randint(0, 800)])
+        astMovementX.append(0)
+        astMovementY.append(0)
+
+    #  life count
     lives = 3
-    rocketAsteroidCollision = False
     livesFont = pygame.font.SysFont('Comic Sans MS', 40)
 
     # -----------------------------Main Game Loop----------------------------------------#
@@ -141,21 +151,29 @@ def main():
             rocketPos[1] -= rocketPos[1] - 695  # Difference is subtracted back making it impossible to cross 695
 
         #  Getting asteroid to bounce off walls/boundaries
-        if asteroidPos[0] <= 25:
-            astMovementX = randint(0, 5)
-            astMovementY = randint(-5, 5)
-        elif asteroidPos[0] >= 875:
-            astMovementX = randint(-5, 0)
-            astMovementY = randint(-5, 5)
-        elif asteroidPos[1] <= 25:
-            astMovementX = randint(-5, 5)
-            astMovementY = randint(0, 5)
-        elif asteroidPos[1] >= 775:
-            astMovementX = randint(-5, 5)
-            astMovementY = randint(-5, 0)
+        for count in range(numAsteroids):
+            if asteroidPos[count][0] <= 25:
+                astMovementX[count] = randint(0, 5)
+                astMovementY[count] = randint(-5, 5)
+            elif asteroidPos[count][0] >= 875:
+                astMovementX[count] = randint(-5, 0)
+                astMovementY[count] = randint(-5, 5)
+            elif asteroidPos[count][1] <= 25:
+                astMovementX[count] = randint(-5, 5)
+                astMovementY[count] = randint(0, 5)
+            elif asteroidPos[count][1] >= 775:
+                astMovementX[count] = randint(-5, 5)
+                astMovementY[count] = randint(-5, 0)
 
-        asteroidPos[0] += astMovementX
-        asteroidPos[1] += astMovementY
+            #  prevents asteroid from stopping by getting 0 for both movement X and Y
+            if astMovementX[count] == 0 and astMovementY[count] == 0:
+                if asteroidPos[count][0] <= 25:
+                    astMovementX[count] = randint(1, 5)
+                else:
+                    astMovementX[count] = randint(-5, -1)
+
+            asteroidPos[count][0] += astMovementX[count]
+            asteroidPos[count][1] += astMovementY[count]
 
         #  Rocket key points for collision detection
         rocketTopRight = (rocketPos[0] + 30, rocketPos[1])
@@ -165,22 +183,28 @@ def main():
         rightWing = (rocketPos[0] + 42, rocketPos[1] + 60)
 
         #  asteroid to rocket collision detection with key points
-        if distFromPoints(asteroidPos, rocketPos) < asteroidSize[0] or \
-                distFromPoints(asteroidPos, rocketTopRight) < asteroidSize[0] or \
-                distFromPoints(asteroidPos, rocketBtmLeft) < asteroidSize[0] or \
-                distFromPoints(asteroidPos, rocketBtmRight) < asteroidSize[0] or \
-                distFromPoints(asteroidPos, leftWing) < asteroidSize[0] or \
-                distFromPoints(asteroidPos, rightWing) < asteroidSize[0]:
-            rocketAsteroidCollision = not rocketAsteroidCollision
+        for count in range(numAsteroids):
+            if distFromPoints(asteroidPos[count], rocketPos) < asteroidSize[0] or \
+                    distFromPoints(asteroidPos[count], rocketTopRight) < asteroidSize[0] or \
+                    distFromPoints(asteroidPos[count], rocketBtmLeft) < asteroidSize[0] or \
+                    distFromPoints(asteroidPos[count], rocketBtmRight) < asteroidSize[0] or \
+                    distFromPoints(asteroidPos[count], leftWing) < asteroidSize[0] or \
+                    distFromPoints(asteroidPos[count], rightWing) < asteroidSize[0]:
+                rocketAsteroidCollision.append(count)  # says which asteroid in list has collided
 
-        if rocketAsteroidCollision:
-            #  rocketBaseColor = (255, 0, 0)
-            asteroidPos[0] = randint(0, 900)
-            asteroidPos[1] = randint(0, 800)
-            astMovementX = randint(-5, 5)
-            astMovementY = randint(-5, 5)
-            lives -= 1
-            rocketAsteroidCollision = False
+        #  if rocketAsteroidCollision has a value (collision), the length is greater than its original 0, and it runs
+        if len(rocketAsteroidCollision) > 0:
+            for count in rocketAsteroidCollision:
+                #  rocketBaseColor = (255, 0, 0)
+                asteroidPos[count][0] = randint(0, 900)
+                asteroidPos[count][1] = randint(0, 800)
+                astMovementX[count] = randint(-5, 5)
+                astMovementY[count] = randint(-5, 5)
+                if astMovementX[count] == 0 and astMovementY[count] == 0:
+                    astMovementX[count] = randint(-5, -1)
+                lives -= 1
+
+            rocketAsteroidCollision = []
 
         # -----------------------------Drawing Everything--------------------------------#
 
@@ -204,7 +228,8 @@ def main():
                                                                                                     rocketPos[1] + 69),
                                                            (rocketPos[0] + 42, rocketPos[1] + 60)])  # Right wing
         #  Space rocks (meteors, asteroids, comet's)
-        pygame.draw.circle(mainSurface, asteroidColor, (asteroidPos[0], asteroidPos[1]), asteroidSize[0])
+        for count in range(numAsteroids):
+            pygame.draw.circle(mainSurface, asteroidColor, asteroidPos[count], asteroidSize[0])
 
         # Surface display
         pygame.display.flip()
