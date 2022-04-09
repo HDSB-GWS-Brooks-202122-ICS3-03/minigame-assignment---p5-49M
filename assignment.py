@@ -14,7 +14,7 @@
 #   2. Multiple asteroids made using a list for convenience and saving space/code. The collision detection has been made
 #   to check if an asteroid has been hit and if so, it finds which one hit and puts it through
 #   rocketAsteroidCollision variable steps.
-#   ...
+#   Menu screen background uploaded from files
 # ---------------------------------------------------------------------------------------#
 from random import randint
 
@@ -41,9 +41,12 @@ def main():
     mainSurface = pygame.display.set_mode((surfaceSize, surfaceSize - 100))
 
     # -----------------------------Program Variable Initialization-----------------------#
-    gameState = "start screen"
+    gameState = 'start screen'
     menuBackground = pygame.image.load('spacebg.jpg')
     menuBackground = pygame.transform.scale(menuBackground, (surfaceSize, surfaceSize - 100))
+    startButtonPos = [325, 375, 250, 100]
+    playText = pygame.font.SysFont('impact', 100)
+    startGame = False
 
     rocketBaseColor = (171, 186, 185)  # rocket color
     rocketWingColor = (156, 5, 5)
@@ -80,12 +83,23 @@ def main():
 
         # start screen (lobby) program state
         if gameState == "start screen":
-            mainSurface.fill((0, 0, 0))
+            #  Checking for button clicks
+            mousePos = pygame.mouse.get_pos()
+            if ev.type == pygame.MOUSEBUTTONUP:
+                if startButtonPos[0] <= mousePos[0] <= startButtonPos[0]+250 and \
+                        startButtonPos[1] <= mousePos[1] <= startButtonPos[1]+100:
+                    gameState = 'main game'
+
             #  Background image
             mainSurface.blit(menuBackground, (0, 0))
+            #  Drawing buttons
+            #  start button
+            pygame.draw.rect(mainSurface, (135, 251, 255), startButtonPos, 5)
+            textPos = playText.render("PLAY", False, (255, 255, 255))
+            mainSurface.blit(textPos, (365, 395))
 
-
-        elif gameState == "main game":  # Main game program state
+        # Main game program state
+        elif gameState == "main game":
             #  Enabling movement with arrow keys when pressed down
             if ev.type == pygame.KEYDOWN:  # KEYDOWN has the attributes: key, mod, unicode, scancode
                 print('A Key was pressed down.  ', end='')
