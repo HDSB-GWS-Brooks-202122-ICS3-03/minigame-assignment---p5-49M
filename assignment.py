@@ -48,6 +48,16 @@ def main():
     startButtonPos = [325, 375, 250, 100]
     playText = pygame.font.SysFont('impact', 100)
     gameTitle = pygame.font.SysFont('impact', 100)
+    howToPlayButton = [300, 500, 300, 50]
+    howToPlayText = pygame.font.SysFont('impact', 60)
+
+    #  how to play game state
+    htpBackground = pygame.image.load('spacerules.jpg')
+    htpBackground = pygame.transform.scale(htpBackground, (surfaceSize, surfaceSize - 100))
+    instructions = pygame.font.SysFont('lucidaconsole', 20)
+    #  return to menu button
+    returnMenuButtonPos = [375, 600, 150, 60]
+    returnText = pygame.font.SysFont('impact', 40)
 
     #  end screen game state
     endBackground = pygame.image.load('stars.jpg')
@@ -95,9 +105,12 @@ def main():
             #  Checking for button clicks
             mousePos = pygame.mouse.get_pos()
             if ev.type == pygame.MOUSEBUTTONUP:
-                if startButtonPos[0] <= mousePos[0] <= startButtonPos[0]+250 and \
-                        startButtonPos[1] <= mousePos[1] <= startButtonPos[1]+100:
+                if startButtonPos[0] <= mousePos[0] <= startButtonPos[0] + 250 and \
+                        startButtonPos[1] <= mousePos[1] <= startButtonPos[1] + 100:
                     gameState = 'main game'
+                elif howToPlayButton[0] <= mousePos[0] <= howToPlayButton[0] + 300 and \
+                        howToPlayButton[1] <= mousePos[1] <= howToPlayButton[1] + 50:
+                    gameState = 'how to play'
 
             #  Background image
             mainSurface.blit(menuBackground, (0, 0))
@@ -109,6 +122,37 @@ def main():
             #  Game title (name of game)
             titlePos = gameTitle.render("SPACE COMMOTION", False, (255, 255, 255))
             mainSurface.blit(titlePos, (100, 250))
+            #  How to play button
+            pygame.draw.rect(mainSurface, (255, 255, 255), howToPlayButton, 3)
+            htpButtonPos = howToPlayText.render("HOW TO PLAY", False, (135, 251, 255))
+            mainSurface.blit(htpButtonPos, (307, 507))
+
+        #  How to play program state
+        elif gameState == 'how to play':
+            #  return button click detection
+            mousePos = pygame.mouse.get_pos()
+            if ev.type == pygame.MOUSEBUTTONUP:
+                if returnMenuButtonPos[0] <= mousePos[0] <= returnMenuButtonPos[0] + 150 and \
+                        returnMenuButtonPos[1] <= mousePos[1] <= returnMenuButtonPos[1] + 60:
+                    gameState = 'start screen'
+
+            #  wallpaper
+            mainSurface.blit(htpBackground, (0, 0))
+            #  instruction text
+            instructionsPos1 = instructions.render('Using the arrow keys,', False, (255, 255, 255))
+            mainSurface.blit(instructionsPos1, (300, 200))
+            instructionsPos2 = instructions.render('move your rocket to avoid', False, (255, 255, 255))
+            mainSurface.blit(instructionsPos2, (280, 240))
+            instructionsPos3 = instructions.render('the asteroids! You have 3 lives,', False, (255, 255, 255))
+            mainSurface.blit(instructionsPos3, (260, 280))
+            instructionsPos4 = instructions.render('do not lose them.   Good Luck!', False, (255, 255, 255))
+            mainSurface.blit(instructionsPos4, (240, 320))
+            #  return button
+            pygame.draw.rect(mainSurface, (255, 255, 255), returnMenuButtonPos, 3)
+            returnTextPos = returnText.render('Return', False, (255, 255, 255))
+            mainSurface.blit(returnTextPos, (405, 620))
+
+
 
         # Main game program state
         elif gameState == "main game":
