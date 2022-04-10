@@ -15,17 +15,28 @@
 #   to check if an asteroid has been hit and if so, it finds which one hit and puts it through
 #   rocketAsteroidCollision variable steps.
 #   Menu screen background uploaded from files
+#   3. Added score going up by seconds and being displayed. Score freezes after 3 lives have been lost and is then
+#   displayed in the game over screen.
 # ---------------------------------------------------------------------------------------#
 from random import randint
 
 import pygame
 import math
+import time
 
 
 def distFromPoints(point1, point2):
     distance = math.sqrt(((point2[0] - point1[0]) ** 2) + ((point2[1] - point1[1]) ** 2))
 
     return distance
+
+
+def timeNow():
+    return int(time.time())
+
+
+def duration(start, end):
+    return end - start
 
 
 def main():
@@ -42,6 +53,7 @@ def main():
 
     # -----------------------------Program Variable Initialization-----------------------#
     gameState = 'start screen'
+
     #  start screen game state
     menuBackground = pygame.image.load('spacebg.jpg')
     menuBackground = pygame.transform.scale(menuBackground, (surfaceSize, surfaceSize - 100))
@@ -67,6 +79,11 @@ def main():
     replayText = pygame.font.SysFont('lucidaconsole', 55)
 
     #  main game, game state
+    #  timer/score counting variables
+    startTime = 0
+    levelDuration = 10
+    nextLevelTime = levelDuration
+    #  rocket
     rocketBaseColor = (171, 186, 185)  # rocket color
     rocketWingColor = (156, 5, 5)
     rocketPos = [435, 250]  # rocket position
@@ -78,19 +95,23 @@ def main():
     moveDown = False
     #  asteroids position is made through a list and each is unique with a random spawn and random movement
     asteroidColor = (153, 153, 153)
-    asteroidPos = []
     asteroidSize = [35]
+    asteroidPos = []
     astMovementX = []
     astMovementY = []
     rocketAsteroidCollision = []
-    numAsteroids = 4
+
+    score = 0
+    startNumAsteroids = 1
+    numAsteroids = startNumAsteroids
     for count in range(numAsteroids):
         asteroidPos.append([900, randint(0, 800)])
         astMovementX.append(0)
         astMovementY.append(0)
 
     #  life count
-    lives = 3
+    startLives = 3
+    lives = startLives
     livesFont = pygame.font.SysFont('Comic Sans MS', 40)
 
     # -----------------------------Main Game Loop----------------------------------------#
@@ -108,6 +129,7 @@ def main():
                 if startButtonPos[0] <= mousePos[0] <= startButtonPos[0] + 250 and \
                         startButtonPos[1] <= mousePos[1] <= startButtonPos[1] + 100:
                     gameState = 'main game'
+                    startTime = timeNow()
                 elif howToPlayButton[0] <= mousePos[0] <= howToPlayButton[0] + 300 and \
                         howToPlayButton[1] <= mousePos[1] <= howToPlayButton[1] + 50:
                     gameState = 'how to play'
@@ -156,6 +178,7 @@ def main():
 
         # Main game program state
         elif gameState == "main game":
+
             #  Enabling movement with arrow keys when pressed down
             if ev.type == pygame.KEYDOWN:  # KEYDOWN has the attributes: key, mod, unicode, scancode
                 print('A Key was pressed down.  ', end='')
@@ -210,6 +233,15 @@ def main():
                         rocketSpeed[1] = 0
 
             # -----------------------------Game Logic----------------------------------------#
+            #  Score increasing every second and new asteroid coming in every 10 seconds
+            score = duration(startTime, timeNow())
+
+            if score == nextLevelTime:
+                nextLevelTime += levelDuration
+                numAsteroids += 1
+                asteroidPos.append([900, randint(0, 800)])
+                astMovementX.append(0)
+                astMovementY.append(0)
 
             #  Transition to game over screen/state
             if lives <= 0:
@@ -291,7 +323,7 @@ def main():
             if len(rocketAsteroidCollision) > 0:
                 for count in rocketAsteroidCollision:
                     #  rocketBaseColor = (255, 0, 0)
-                    asteroidPos[count][0] = randint(0, 900)
+                    asteroidPos[count][0] = 900
                     asteroidPos[count][1] = randint(0, 800)
                     astMovementX[count] = randint(-5, 5)
                     astMovementY[count] = randint(-5, 5)
@@ -306,7 +338,7 @@ def main():
             mainSurface.fill((39, 1, 59))
             #  Lives counter
             lifeCount = str(lives)
-            textSurface = livesFont.render(f"lives: {lifeCount}", False, (255, 0, 0))
+            textSurface = livesFont.render(f"lives: {lifeCount} score: {score}", False, (255, 0, 0))
             mainSurface.blit(textSurface, (0, 0))
 
             #  Rocket design (All parts are connected throughout movement)
@@ -333,11 +365,31 @@ def main():
             if ev.type == pygame.MOUSEBUTTONUP:
                 if replayButtonPos[0] <= mousePos[0] <= replayButtonPos[0] + 350 and \
                         replayButtonPos[1] <= mousePos[1] <= replayButtonPos[1] + 100:
-                    lives = 3
+                    lives = startLives
+                    nextLevelTime = levelDuration
                     gameState = "main game"
+                    asteroidPos = []
+                    astMovementX = []
+                    astMovementY = []
+                    rocketAsteroidCollision = []
+                    rocketPos = [435, 250]  # rocket position
+
+                    #  makes asteroids come in from the right side
+                    numAsteroids = startNumAsteroids
+                    for count in range(numAsteroids):
+                        asteroidPos.append([900, randint(0, 800)])
+                        astMovementX.append(0)
+                        astMovementY.append(0)
+
+                    startTime = timeNow()
 
             #  background image
             mainSurface.blit(endBackground, (0, 0))
+
+            # Score
+            resultSurface = livesFont.render(f"Your score: {score}", False, (255, 0, 0))
+            mainSurface.blit(resultSurface, (0, 0))
+
             #  Game over text
             gOTextPos = gameOverText.render("Game Over", False, (255, 0, 0))
             mainSurface.blit(gOTextPos, (180, 200))
