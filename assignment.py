@@ -47,7 +47,8 @@ def main():
     menuBackground = pygame.transform.scale(menuBackground, (surfaceSize, surfaceSize - 100))
     startButtonPos = [325, 375, 250, 100]
     playText = pygame.font.SysFont('impact', 100)
-    startGame = False
+    gameTitle = pygame.font.SysFont('impact', 100)
+
     #  end screen game state
     endBackground = pygame.image.load('stars.jpg')
     endBackground = pygame.transform.scale(endBackground, (surfaceSize, surfaceSize - 100))
@@ -105,6 +106,9 @@ def main():
             pygame.draw.rect(mainSurface, (135, 251, 255), startButtonPos, 5)
             playTextPos = playText.render("PLAY", False, (255, 255, 255))
             mainSurface.blit(playTextPos, (365, 395))
+            #  Game title (name of game)
+            titlePos = gameTitle.render("SPACE COMMOTION", False, (255, 255, 255))
+            mainSurface.blit(titlePos, (100, 250))
 
         # Main game program state
         elif gameState == "main game":
