@@ -42,12 +42,20 @@ def main():
 
     # -----------------------------Program Variable Initialization-----------------------#
     gameState = 'start screen'
+    #  start screen game state
     menuBackground = pygame.image.load('spacebg.jpg')
     menuBackground = pygame.transform.scale(menuBackground, (surfaceSize, surfaceSize - 100))
     startButtonPos = [325, 375, 250, 100]
     playText = pygame.font.SysFont('impact', 100)
     startGame = False
+    #  end screen game state
+    endBackground = pygame.image.load('stars.jpg')
+    endBackground = pygame.transform.scale(endBackground, (surfaceSize, surfaceSize - 100))
+    gameOverText = pygame.font.SysFont('lucidaconsole', 100)
+    replayButtonPos = [275, 350, 350, 100]
+    replayText = pygame.font.SysFont('lucidaconsole', 55)
 
+    #  main game, game state
     rocketBaseColor = (171, 186, 185)  # rocket color
     rocketWingColor = (156, 5, 5)
     rocketPos = [435, 250]  # rocket position
@@ -95,8 +103,8 @@ def main():
             #  Drawing buttons
             #  start button
             pygame.draw.rect(mainSurface, (135, 251, 255), startButtonPos, 5)
-            textPos = playText.render("PLAY", False, (255, 255, 255))
-            mainSurface.blit(textPos, (365, 395))
+            playTextPos = playText.render("PLAY", False, (255, 255, 255))
+            mainSurface.blit(playTextPos, (365, 395))
 
         # Main game program state
         elif gameState == "main game":
@@ -154,6 +162,16 @@ def main():
                         rocketSpeed[1] = 0
 
             # -----------------------------Game Logic----------------------------------------#
+
+            #  Transition to game over screen/state
+            if lives <= 0:
+                gameState = "game over"
+                rocketSpeed[0] = 0
+                rocketSpeed[1] = 0
+                for count in range(numAsteroids):
+                    astMovementX[count] = 0
+                    astMovementY[count] = 0
+
             # Rocket movement based on the rocket speed
             rocketPos[0] += rocketSpeed[0]
             rocketPos[1] += rocketSpeed[1]
@@ -260,6 +278,25 @@ def main():
             for count in range(numAsteroids):
                 pygame.draw.circle(mainSurface, asteroidColor, asteroidPos[count], asteroidSize[0])
 
+        #  game over screen
+        elif gameState == "game over":
+            #  button click detection
+            mousePos = pygame.mouse.get_pos()
+            if ev.type == pygame.MOUSEBUTTONUP:
+                if replayButtonPos[0] <= mousePos[0] <= replayButtonPos[0] + 350 and \
+                        replayButtonPos[1] <= mousePos[1] <= replayButtonPos[1] + 100:
+                    lives = 3
+                    gameState = "main game"
+
+            #  background image
+            mainSurface.blit(endBackground, (0, 0))
+            #  Game over text
+            gOTextPos = gameOverText.render("Game Over", False, (255, 0, 0))
+            mainSurface.blit(gOTextPos, (180, 200))
+            #  play again button
+            pygame.draw.rect(mainSurface, (255, 255, 255), replayButtonPos, 5)
+            replayTextPos = replayText.render("Play Again", False, (0, 255, 0))
+            mainSurface.blit(replayTextPos, (285, 370))
         # Surface display
         pygame.display.flip()
 
