@@ -1,13 +1,19 @@
 # -----------------------------------------------------------------------------
-# Name: Michal Buczek       Assignment Template (assignment.py)
-# Purpose:     A description of your program goes here.
+# Name: Space Commotion      Assignment Template (assignment.py)
+# Purpose:     To practice pygame skills and create a program which involves high levels of concentration and hand eye
+# coordination.
 #
-# Author:      Your Name Here
-# Created:     13-Sept-2020
-# Updated:     13-Sept-2020
+# Author:      Michal
+# Created:     4-April-2022
+# Updated:     10-April-2022
 # ---------------------------------------------------------------------------------------#
-# I think this project deserves a level XXXXXX because ...
-#
+# I think that I deserve a level 4+ because I completed all requirement for levels 1 through 4 and went above and
+# beyond.
+# By challenging myself to learn new things such as backgrounds, score/timer and much more I have developed as a
+# programmer. I also made sure to pay attention to small details such as making movement smoother through booleans.
+# I have been pushing my work with descriptions daily to prove how hard I have worked on this project and for me to
+# look at when I did certain changes to my program. Overall, this project was lots of fun and has prepared me well for
+# any future pygame programs!
 # Features Added:
 #   1. Movement with boolean functions to make transitions from keys smoother. When two keys are pressed by accident at
 #   the same time, movement does not stop and goes in the most recently clicked key direction.
