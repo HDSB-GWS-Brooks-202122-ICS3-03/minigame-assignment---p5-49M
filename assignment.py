@@ -77,12 +77,20 @@ def main():
     gameOverText = pygame.font.SysFont('lucidaconsole', 100)
     replayButtonPos = [275, 350, 350, 100]
     replayText = pygame.font.SysFont('lucidaconsole', 55)
+    star1Colour = (255, 255, 255)
+    star2Colour = (255, 255, 255)
+    star3Colour = (255, 255, 255)
+    starPos = [400, 550]
 
     #  main game, game state
+    mainBackground = pygame.image.load('mainspace.jpg')
+    mainBackground = pygame.transform.scale(mainBackground, (surfaceSize, surfaceSize - 100))
+
     #  timer/score counting variables
     startTime = 0
     levelDuration = 10
     nextLevelTime = levelDuration
+
     #  rocket
     rocketBaseColor = (171, 186, 185)  # rocket color
     rocketWingColor = (156, 5, 5)
@@ -102,6 +110,8 @@ def main():
     rocketAsteroidCollision = []
 
     score = 0
+    highestScore = 0
+    newHighScore = False
     startNumAsteroids = 1
     numAsteroids = startNumAsteroids
     for count in range(numAsteroids):
@@ -174,9 +184,7 @@ def main():
             returnTextPos = returnText.render('Return', False, (255, 255, 255))
             mainSurface.blit(returnTextPos, (405, 620))
 
-
-
-        # Main game program state
+        #  Main game program state
         elif gameState == "main game":
 
             #  Enabling movement with arrow keys when pressed down
@@ -236,6 +244,7 @@ def main():
             #  Score increasing every second and new asteroid coming in every 10 seconds
             score = duration(startTime, timeNow())
 
+            #  makes new asteroids come in from the right
             if score == nextLevelTime:
                 nextLevelTime += levelDuration
                 numAsteroids += 1
@@ -335,11 +344,14 @@ def main():
 
             # -----------------------------Drawing Everything--------------------------------#
 
-            mainSurface.fill((39, 1, 59))
+            mainSurface.blit(mainBackground, (0, 0))
             #  Lives counter
             lifeCount = str(lives)
-            textSurface = livesFont.render(f"lives: {lifeCount} score: {score}", False, (255, 0, 0))
+            textSurface = livesFont.render(f"lives: {lifeCount}", False, (255, 0, 0))
             mainSurface.blit(textSurface, (0, 0))
+            #  Score/time (s) counter
+            scorePos = livesFont.render(f"score: {score}", False, (255, 0, 0))
+            mainSurface.blit(scorePos, (775, 0))
 
             #  Rocket design (All parts are connected throughout movement)
             pygame.draw.ellipse(mainSurface, rocketBaseColor, (rocketPos[0], rocketPos[1], 30, 90))  # rockets main body
@@ -382,13 +394,27 @@ def main():
                         astMovementY.append(0)
 
                     startTime = timeNow()
+                    newHighScore = False
 
             #  background image
             mainSurface.blit(endBackground, (0, 0))
 
             # Score
-            resultSurface = livesFont.render(f"Your score: {score}", False, (255, 0, 0))
-            mainSurface.blit(resultSurface, (0, 0))
+            highScoreTxt = f"High score: {highestScore}"
+            if score > highestScore:
+                highestScore = score
+                newHighScore = True
+
+            if newHighScore:
+                highScoreTxt = f"New high score {highestScore}!"
+
+            highScorePos = livesFont.render(highScoreTxt, False, (0, 255, 0))
+            mainSurface.blit(highScorePos, (500, 600))
+            resultSurface = livesFont.render(f"Your score: {score}", False, (255, 255, 255))
+            mainSurface.blit(resultSurface, (250, 600))
+
+
+            #  highest score display
 
             #  Game over text
             gOTextPos = gameOverText.render("Game Over", False, (255, 0, 0))
