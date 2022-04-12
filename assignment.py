@@ -32,20 +32,72 @@ import time
 
 
 def distFromPoints(point1, point2):
+    """
+    This function calculates the distance from two points using pythagorean theorem.
+
+    It is used in detecting collision in between the rocket and the asteroids. By taking in point positions and then
+    plugging them into the formula it determines whether the points collided.
+
+    parameters
+    ------------------
+    :param point1 : Asteroid position
+    takes the position of every asteroid
+    :param point2: rocket key point
+    takes the position of a specific point on the rocket
+
+    Returns
+    ------------------
+    :return:
+    returns the distance of the center of the asteroids and the rocket key points
+    """
+
     distance = math.sqrt(((point2[0] - point1[0]) ** 2) + ((point2[1] - point1[1]) ** 2))
 
     return distance
 
 
 def timeNow():
+    """
+    This function get the time in seconds of the program from the moment the game runs.
+
+    The time (seconds) is shown in the form of a score which users use to try and get new highscores.
+
+    Returns
+    ----------------
+    :return:
+    Sends the time in seconds to "score" which then makes it start from 0 when main game is run
+    """
     return int(time.time())
 
 
 def duration(start, end):
+    """
+    This function measures the duration of seconds in main game state to display as the score
+    Parameters
+    ------------------
+    :param start:
+    starts counter when program is run
+    :param end:
+    ends counter when main game is done
+    Return
+    ------------------
+    :return:
+    subtracts the start time from the end time to help show how long the program is
+    """
     return end - start
 
 
 def main():
+    """
+    All game components, events, logic and drawing happens within the main loop.
+
+    The purpose of this main() is to have a start and end point which the program can constantly repeat.
+
+    Return
+    ----------------
+    :return:
+    all information from the loop is run, and it indicates starting the loop again.
+    """
     # -----------------------------Setup-------------------------------------------------#
     """ Set up the game and run the main game loop """
     pygame.init()  # Prepare the pygame module for use
@@ -343,7 +395,7 @@ def main():
                     astMovementX[count] = randint(-5, 5)
                     astMovementY[count] = randint(-5, 5)
                     if astMovementX[count] == 0 and astMovementY[count] == 0:
-                        astMovementX[count] = randint(-5, -1)
+                        astMovementX[count] = randint(-5, -1)  # Makes it impossible for rocketMovement to be (0, 0)
                     lives -= 1
 
                 rocketAsteroidCollision = []
@@ -418,7 +470,6 @@ def main():
             mainSurface.blit(highScorePos, (500, 600))
             resultSurface = livesFont.render(f"Your score: {score}", False, (255, 255, 255))
             mainSurface.blit(resultSurface, (250, 600))
-
 
             #  highest score display
 
